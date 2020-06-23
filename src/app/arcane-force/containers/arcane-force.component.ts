@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { CoreService } from 'src/app/core/services/core.service';
+import arcaneSymbolImages from 'src/assets/images/arcane-symbol';
 
 const localStorageAccessKey = 'arcaneForceForm';
 @Component({
@@ -181,19 +182,30 @@ export class ArcaneForceComponent implements OnInit {
           Math.floor((2679 - this.getTotal(x) + x.daily - 1) / x.daily),
         ),
     );
+
     this.symbolChart = {
       tooltip: {
         trigger: 'axis',
       },
       legend: {
-        data: candidate.map(key => this.translate[key]),
+        align: 'left',
+        itemWidth: 25,
+        itemHeight: 25,
+        data: candidate.map(key => {
+          return {
+            name: this.translate[key],
+            icon: arcaneSymbolImages[key],
+          };
+        }),
       },
       xAxis: {
         type: 'category',
+        name: '진행일',
         data: Array.from({ length: left + 1 }, (_, k) => k),
       },
       yAxis: {
         type: 'value',
+        name: '심볼 레벨',
       },
       dataZoom: [
         {
@@ -214,11 +226,25 @@ export class ArcaneForceComponent implements OnInit {
         return {
           name: this.translate[key],
           type: 'line',
+          symbol: 'pin',
+          symbolOffset: [0, '50%'],
           step: 'start',
           data: this.getSymbolPlot(value, left).map(x => x.level),
           itemStyle: {
             color: this.colors[key],
           },
+          markPoint: {
+            symbol: 'diamond',
+            symbolSize: 30,
+            symbolOffset: ['-11.5%', '-50%'],
+            data: [{
+              name: 'maximum',
+              type: 'max',
+              itemStyle: {
+                opacity: 0.8
+              },
+            }]
+          }
         };
       }),
     };
